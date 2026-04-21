@@ -9,47 +9,40 @@ final class Renderer {
         let width = size.width
         let height = size.height
 
-        // Background
-        if let bg = profile.bgColors.first, let color = NSColor(argbHex: bg) {
-            ctx.setFillColor(color.cgColor)
-            ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        } else {
-            ctx.setFillColor(NSColor.black.cgColor)
-            ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        }
+        let bgColor = NSColor(argbHex: profile.bgColors.first ?? "#ff242424") ?? .black
+        ctx.setFillColor(bgColor.cgColor)
+        ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
 
-        // Foreground setup
-        let fgColor = NSColor(argbHex: profile.fgColors.first ?? "#ff3584e4") ?? NSColor.systemBlue
-        if config.filling {
-            ctx.setFillColor(fgColor.cgColor)
-        } else {
-            ctx.setStrokeColor(fgColor.cgColor)
-            ctx.setLineWidth(CGFloat(config.linesThickness))
-            ctx.setLineJoin(.round)
-            ctx.setLineCap(.round)
-        }
+        let fgColor = NSColor(argbHex: profile.fgColors.first ?? "#ff3584e4") ?? .systemBlue
+        applyForegroundStyle(ctx: ctx, color: fgColor, config: config)
 
         let margin = CGFloat(config.areaMargin)
         let innerW = max(1, width - margin * 2)
         let innerH = max(1, height - margin * 2)
+        let rotation = CGFloat(config.rotation)
 
-        let mirrorMode = config.mirror
-        switch mirrorMode {
+        switch config.mirror {
         case .off:
             let originX = margin + (width - innerW) * CGFloat(config.areaOffsetX)
             let originY = margin + (height - innerH) * CGFloat(config.areaOffsetY)
             drawMode(ctx: ctx, sample: sample, direction: config.direction,
-                     x: originX, y: originY, width: innerW, height: innerH, config: config)
+                     x: originX, y: originY, width: innerW, height: innerH,
+                     rotation: rotation, config: config, fgColor: fgColor)
+
         case .full:
             let halfW = mirrorHalfWidth(innerW, direction: config.direction)
             let halfH = mirrorHalfHeight(innerH, direction: config.direction)
             drawMode(ctx: ctx, sample: sample, direction: config.direction,
-                     x: margin, y: margin, width: halfW, height: halfH, config: config)
-            drawMode(ctx: ctx, sample: config.reverseMirror ? sample.reversed() : sample,
+                     x: margin, y: margin, width: halfW, height: halfH,
+                     rotation: rotation, config: config, fgColor: fgColor)
+            drawMode(ctx: ctx,
+                     sample: config.reverseMirror ? sample.reversed() : sample,
                      direction: mirroredDirection(config.direction),
                      x: margin + mirrorOffsetX(innerW, direction: config.direction),
                      y: margin + mirrorOffsetY(innerH, direction: config.direction),
-                     width: halfW, height: halfH, config: config)
+                     width: halfW, height: halfH,
+                     rotation: -rotation, config: config, fgColor: fgColor)
+
         case .splitChannels:
             let mid = sample.count / 2
             let firstHalf = Array(sample.prefix(mid))
@@ -58,27 +51,75 @@ final class Renderer {
             let halfW = mirrorHalfWidth(innerW, direction: config.direction)
             let halfH = mirrorHalfHeight(innerH, direction: config.direction)
             drawMode(ctx: ctx, sample: firstHalf, direction: config.direction,
-                     x: margin, y: margin, width: halfW, height: halfH, config: config)
+                     x: margin, y: margin, width: halfW, height: halfH,
+                     rotation: rotation, config: config, fgColor: fgColor)
             drawMode(ctx: ctx, sample: secondHalf, direction: mirroredDirection(config.direction),
                      x: margin + mirrorOffsetX(innerW, direction: config.direction),
                      y: margin + mirrorOffsetY(innerH, direction: config.direction),
-                     width: halfW, height: halfH, config: config)
+                     width: halfW, height: halfH,
+                     rotation: -rotation, config: config, fgColor: fgColor)
+        }
+    }
+
+    private func applyForegroundStyle(ctx: CGContext, color: NSColor, config: Configuration) {
+        if config.filling {
+            ctx.setFillColor(color.cgColor)
+        } else {
+            ctx.setStrokeColor(color.cgColor)
+            ctx.setLineWidth(CGFloat(config.linesThickness))
+            ctx.setLineJoin(.round)
+            ctx.setLineCap(.round)
         }
     }
 
     private func drawMode(ctx: CGContext, sample: [Float], direction: DrawingDirection,
-                          x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, config: Configuration) {
+                          x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
+                          rotation: CGFloat, config: Configuration, fgColor: NSColor) {
         switch config.mode {
         case .waveBox:
             WaveBox.draw(ctx: ctx, sample: sample, direction: direction,
-                         x: x, y: y, width: width, height: height, config: config)
+                         x: x, y: y, width: width, height: height,
+                         rotation: rotation, config: config)
+        case .levelsBox:
+            LevelsBox.draw(ctx: ctx, sample: sample, direction: direction,
+                           x: x, y: y, width: width, height: height,
+                           rotation: rotation, config: config)
+        case .particlesBox:
+            ParticlesBox.draw(ctx: ctx, sample: sample, direction: direction,
+                              x: x, y: y, width: width, height: height,
+                              rotation: rotation, config: config)
         case .barsBox:
             BarsBox.draw(ctx: ctx, sample: sample, direction: direction,
-                         x: x, y: y, width: width, height: height, config: config)
-        default:
-            // Not yet implemented — fall back to BarsBox.
-            BarsBox.draw(ctx: ctx, sample: sample, direction: direction,
-                         x: x, y: y, width: width, height: height, config: config)
+                         x: x, y: y, width: width, height: height,
+                         rotation: rotation, config: config)
+        case .spineBox:
+            SpineBox.draw(ctx: ctx, sample: sample, direction: direction,
+                          x: x, y: y, width: width, height: height,
+                          rotation: rotation, config: config, fallback: fgColor)
+        case .splitterBox:
+            SplitterBox.draw(ctx: ctx, sample: sample, direction: direction,
+                             x: x, y: y, width: width, height: height,
+                             rotation: rotation, config: config)
+        case .waveCircle:
+            WaveCircle.draw(ctx: ctx, sample: sample, direction: direction,
+                            x: x, y: y, width: width, height: height,
+                            rotation: rotation, config: config)
+        case .levelsCircle:
+            LevelsCircle.draw(ctx: ctx, sample: sample, direction: direction,
+                              x: x, y: y, width: width, height: height,
+                              rotation: rotation, config: config)
+        case .particlesCircle:
+            ParticlesCircle.draw(ctx: ctx, sample: sample, direction: direction,
+                                 x: x, y: y, width: width, height: height,
+                                 rotation: rotation, config: config)
+        case .barsCircle:
+            BarsCircle.draw(ctx: ctx, sample: sample, direction: direction,
+                            x: x, y: y, width: width, height: height,
+                            rotation: rotation, config: config)
+        case .spineCircle:
+            SpineCircle.draw(ctx: ctx, sample: sample, direction: direction,
+                             x: x, y: y, width: width, height: height,
+                             rotation: rotation, config: config, fallback: fgColor)
         }
     }
 

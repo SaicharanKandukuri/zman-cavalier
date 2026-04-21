@@ -3,7 +3,8 @@ import CoreGraphics
 /// Smooth cubic-bezier wave across the drawing area. Ported from the Skia SKPath CubicTo version.
 enum WaveBox {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
-                     x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, config: Configuration) {
+                     x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
+                     rotation: CGFloat, config: Configuration) {
         guard sample.count >= 2 else { return }
         let n = sample.count
         let axisLength = direction.isVertical ? width : height

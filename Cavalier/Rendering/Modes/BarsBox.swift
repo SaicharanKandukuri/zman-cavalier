@@ -3,7 +3,8 @@ import CoreGraphics
 /// Simple rectangular bars. Ported from DrawBarsBox in the Skia renderer.
 enum BarsBox {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
-                     x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, config: Configuration) {
+                     x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
+                     rotation: CGFloat, config: Configuration) {
         guard !sample.isEmpty else { return }
         let n = sample.count
         let step = (direction.isVertical ? width : height) / CGFloat(n)
