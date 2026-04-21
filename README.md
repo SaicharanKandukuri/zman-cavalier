@@ -8,6 +8,16 @@ A native macOS music visualizer. Independent Swift rewrite of [Nickvision Cavali
 
 Bundle ID: `com.zman.cavalier`.
 
+## Install (prebuilt DMG)
+
+Grab the latest `.dmg` from [Releases](../../releases), drag **Cavalier** into **Applications**, then — because the build is ad-hoc signed and not notarized — run this once to let it launch:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Cavalier.app
+```
+
+Without this step Gatekeeper will show *"Cavalier can't be opened"* or *"Cavalier is damaged"*. The xattr command only removes the quarantine flag set by Safari/AirDrop; it doesn't disable other security checks.
+
 ## Credits
 
 - Original Cavalier (GTK / .NET): © 2023 Fyodor Sobolev and the Nickvision contributors, MIT licensed. See `LICENSE.upstream`.

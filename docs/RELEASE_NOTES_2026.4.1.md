@@ -6,6 +6,28 @@ A native-stack rewrite of [Nickvision Cavalier](https://github.com/NickvisionApp
 
 ---
 
+## Install
+
+**Requires macOS 14.4+ (Apple Silicon).**
+
+1. Download `Cavalier-2026.4.1.dmg` from the assets below.
+2. Open the DMG and drag **Cavalier** into **Applications**.
+3. **Before launching, strip the quarantine attribute.** The build is ad-hoc signed, not notarized with an Apple Developer ID, so Gatekeeper will refuse to open it with a hard *"Cavalier can't be opened"* error (no "Open Anyway" button):
+
+   ```sh
+   xattr -dr com.apple.quarantine /Applications/Cavalier.app
+   ```
+
+4. Launch from Applications or Launchpad.
+
+If you get *"'Cavalier' is damaged and can't be opened"* instead, that's the same issue — the xattr command above fixes both. You only need to run it once per install.
+
+### Why?
+
+Apple's Gatekeeper treats downloads (anything with the `com.apple.quarantine` extended attribute set by Safari / AirDrop / Messages / curl) more strictly when the app isn't signed with a paid `$99/yr` Apple Developer ID certificate. The command above removes that attribute — it doesn't disable any other security check, and once the app is trusted on first launch you never need it again.
+
+---
+
 ## What's new since 2026.4.0
 
 - 15 color presets in the Colors tab (Classic, Sunset, Ocean, Synthwave, Forest, Fire, Nord, Dracula, Mono, Matrix, Rainbow, Pastel, Amber, Solarized, Ice).
