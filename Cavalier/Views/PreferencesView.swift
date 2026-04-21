@@ -201,6 +201,9 @@ private struct ColorsTab: View {
 
     var body: some View {
         Form {
+            Section("Presets") {
+                PresetGrid { preset in applyPreset(preset) }
+            }
             Section {
                 ColorListEditor(
                     title: "Foreground",
@@ -215,11 +218,20 @@ private struct ColorsTab: View {
                     default: "#ff242424",
                     onChange: { list in updateActive { $0.bgColors = list } })
             }
-            Text("Add a second color (+) to enable a gradient. Config: \(Configuration.configURL.path)")
+            Text("Pick a preset or add a second color (+) to make a gradient. Config: \(Configuration.configURL.path)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
         .padding()
+    }
+
+    private func applyPreset(_ preset: ColorPreset) {
+        updateActive { p in
+            p.fgColors = preset.fgColors
+            p.bgColors = preset.bgColors
+            p.theme = preset.theme
+            p.name = preset.name
+        }
     }
 
     private func updateActive(_ mutate: (inout ColorProfile) -> Void) {
@@ -229,6 +241,67 @@ private struct ColorsTab: View {
         mutate(&p)
         config.colorProfiles[idx] = p
         config.save()
+    }
+}
+
+private struct PresetGrid: View {
+    let onPick: (ColorPreset) -> Void
+
+    private let columns = [GridItem(.adaptive(minimum: 110), spacing: 10)]
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+            ForEach(ColorPresets.all) { preset in
+                PresetSwatch(preset: preset) { onPick(preset) }
+            }
+        }
+    }
+}
+
+private struct PresetSwatch: View {
+    let preset: ColorPreset
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 4) {
+                swatchBody
+                    .frame(height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                Text(preset.name)
+                    .font(.caption)
+                    .lineLimit(1)
+                    .foregroundStyle(.primary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var swatchBody: some View {
+        ZStack {
+            bgGradient
+            HStack(spacing: 2) {
+                ForEach(0..<8, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(fgGradient)
+                        .frame(width: 4)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal, 6)
+        }
+    }
+
+    private var fgGradient: LinearGradient {
+        let colors = preset.fgColors.compactMap { NSColor(argbHex: $0).map(Color.init) }
+        return LinearGradient(colors: colors.isEmpty ? [.blue] : colors,
+                              startPoint: .bottom, endPoint: .top)
+    }
+
+    private var bgGradient: LinearGradient {
+        let colors = preset.bgColors.compactMap { NSColor(argbHex: $0).map(Color.init) }
+        return LinearGradient(colors: colors.isEmpty ? [.black] : colors,
+                              startPoint: .top, endPoint: .bottom)
     }
 }
 
