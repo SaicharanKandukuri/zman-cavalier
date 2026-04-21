@@ -1,5 +1,9 @@
 # Cavalier for macOS (zman edition)
 
+<p align="center">
+  <img src="docs/banner.png" alt="Cavalier visualizer in Synthwave preset" width="640" />
+</p>
+
 A native macOS music visualizer. Independent Swift rewrite of [Nickvision Cavalier](https://github.com/NickvisionApps/Cavalier) — no CAVA, no BlackHole, no Homebrew dependencies. Uses Core Audio's process tap API to capture system audio directly.
 
 Bundle ID: `com.zman.cavalier`.
