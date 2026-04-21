@@ -200,29 +200,30 @@ private struct ColorsTab: View {
     @Bindable var config: Configuration
 
     var body: some View {
-        Form {
-            Section("Presets") {
-                PresetGrid { preset in applyPreset(preset) }
-            }
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Presets").font(.headline)
+                    PresetGrid { preset in applyPreset(preset) }
+                }
+                Divider()
                 ColorListEditor(
                     title: "Foreground",
                     hexes: config.currentProfile.fgColors,
                     default: "#ff3584e4",
                     onChange: { list in updateActive { $0.fgColors = list } })
-            }
-            Section {
+                Divider()
                 ColorListEditor(
                     title: "Background",
                     hexes: config.currentProfile.bgColors,
                     default: "#ff242424",
                     onChange: { list in updateActive { $0.bgColors = list } })
+                Text("Pick a preset or add a second color (+) to make a gradient. Config: \(Configuration.configURL.path)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            Text("Pick a preset or add a second color (+) to make a gradient. Config: \(Configuration.configURL.path)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            .padding()
         }
-        .padding()
     }
 
     private func applyPreset(_ preset: ColorPreset) {
