@@ -41,6 +41,10 @@ final class Configuration: Codable {
     var fgImageAlpha: Float = 1
 
     var hearts: Bool = false
+    var showFPS: Bool = true
+    var alwaysOnTop: Bool = false
+    /// Bar fall speed (full-scale drops per second). 0 = instant snap, higher = slower fall (heavier gravity hold).
+    var gravity: Float = 1.5
 
     enum CodingKeys: String, CodingKey {
         case windowWidth, windowHeight, windowMaximized, areaMargin
@@ -52,6 +56,9 @@ final class Configuration: Codable {
         case innerRadius, rotation, colorProfiles, activeProfile
         case bgImageIndex, bgImageScale, bgImageAlpha
         case fgImageIndex, fgImageScale, fgImageAlpha
+        case showFPS
+        case alwaysOnTop
+        case gravity
     }
 
     init() {}
@@ -95,6 +102,9 @@ final class Configuration: Codable {
         fgImageIndex = (try? c.decode(Int.self, forKey: .fgImageIndex)) ?? -1
         fgImageScale = (try? c.decode(Float.self, forKey: .fgImageScale)) ?? 1
         fgImageAlpha = (try? c.decode(Float.self, forKey: .fgImageAlpha)) ?? 1
+        showFPS = (try? c.decode(Bool.self, forKey: .showFPS)) ?? true
+        alwaysOnTop = (try? c.decode(Bool.self, forKey: .alwaysOnTop)) ?? false
+        gravity = (try? c.decode(Float.self, forKey: .gravity)) ?? 1.5
     }
 
     func encode(to encoder: Encoder) throws {
@@ -135,6 +145,9 @@ final class Configuration: Codable {
         try c.encode(fgImageIndex, forKey: .fgImageIndex)
         try c.encode(fgImageScale, forKey: .fgImageScale)
         try c.encode(fgImageAlpha, forKey: .fgImageAlpha)
+        try c.encode(showFPS, forKey: .showFPS)
+        try c.encode(alwaysOnTop, forKey: .alwaysOnTop)
+        try c.encode(gravity, forKey: .gravity)
     }
 
     var currentProfile: ColorProfile {

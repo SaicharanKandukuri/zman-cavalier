@@ -75,6 +75,8 @@ private struct AudioTab: View {
             Toggle("Monstercat smoothing", isOn: $config.monstercat)
             LabeledSlider(title: "Noise reduction",
                           value: $config.noiseReduction, range: 0.15...0.95, format: "%.2f")
+            LabeledSlider(title: "Gravity (fall speed)",
+                          value: $config.gravity, range: 0...5, format: "%.2f")
         }
         .padding()
         .onChange(of: config.barPairs) { _, _ in config.save() }
@@ -85,6 +87,7 @@ private struct AudioTab: View {
         .onChange(of: config.sensitivity) { _, _ in config.save() }
         .onChange(of: config.monstercat) { _, _ in config.save() }
         .onChange(of: config.noiseReduction) { _, _ in config.save() }
+        .onChange(of: config.gravity) { _, _ in config.save() }
     }
 }
 
@@ -93,6 +96,9 @@ private struct LayoutTab: View {
 
     var body: some View {
         Form {
+            Toggle("Always on top", isOn: $config.alwaysOnTop)
+            Toggle("Show FPS overlay", isOn: $config.showFPS)
+            Divider()
             Picker("Mirror", selection: $config.mirror) {
                 Text("Off").tag(Mirror.off)
                 Text("Full").tag(Mirror.full)
@@ -112,6 +118,8 @@ private struct LayoutTab: View {
                           value: $config.rotation, range: 0...(Float.pi * 2), format: "%.2f rad")
         }
         .padding()
+        .onChange(of: config.alwaysOnTop) { _, _ in config.save() }
+        .onChange(of: config.showFPS) { _, _ in config.save() }
         .onChange(of: config.mirror) { _, _ in config.save() }
         .onChange(of: config.reverseMirror) { _, _ in config.save() }
         .onChange(of: config.areaMargin) { _, _ in config.save() }

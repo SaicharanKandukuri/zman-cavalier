@@ -11,12 +11,23 @@ struct CavalierApp: App {
                 .environment(config)
                 .environment(engine)
                 .frame(minWidth: 320, minHeight: 200)
-                .background(WindowAccessor())
+                .background(WindowAccessor(alwaysOnTop: config.alwaysOnTop))
                 .onAppear { engine.start() }
         }
         .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .windowArrangement) {
+                Divider()
+                Toggle("Always on Top", isOn: Binding(
+                    get: { config.alwaysOnTop },
+                    set: { newValue in
+                        config.alwaysOnTop = newValue
+                        config.save()
+                    }
+                ))
+                .keyboardShortcut("t", modifiers: [.command, .option])
+            }
         }
 
         Settings {
