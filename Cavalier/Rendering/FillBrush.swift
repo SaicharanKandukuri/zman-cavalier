@@ -11,7 +11,14 @@ enum FillBrush {
     /// Apply this brush to the CGContext's current path (which must already be added).
     /// `filling=true` fills the path; `filling=false` strokes it (solid colors only —
     /// gradient strokes fall back to the first color).
-    func apply(ctx: CGContext, filling: Bool, thickness: CGFloat = 0) {
+    /// If `capture` is non-nil, the current path (transformed into world space) is
+    /// appended to it before being consumed — used for foreground image masking.
+    func apply(ctx: CGContext, filling: Bool, thickness: CGFloat = 0, capture: CGMutablePath? = nil) {
+        if let capture = capture, let path = ctx.path, !path.isEmpty {
+            var m = ctx.ctm
+            let world = path.copy(using: &m) ?? path
+            capture.addPath(world)
+        }
         switch self {
         case .solid(let color):
             if filling {

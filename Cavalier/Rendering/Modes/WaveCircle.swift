@@ -5,7 +5,8 @@ import Foundation
 enum WaveCircle {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush,
+                     capture: CGMutablePath? = nil) {
         guard !sample.isEmpty else { return }
         let fullRadius = min(width, height) / 2
         let innerRadius = fullRadius * CGFloat(config.innerRadius)
@@ -42,8 +43,13 @@ enum WaveCircle {
         path.addCurve(to: end, control1: c1, control2: c2)
         path.closeSubpath()
 
+        if let capture = capture {
+            var m = ctx.ctm
+            let worldPath = path.copy(using: &m) ?? path
+            capture.addPath(worldPath)
+        }
+
         if config.filling {
-            // Fill an annular ring between inner & outer, clipped to the wave.
             ctx.saveGState()
             ctx.addPath(path)
             ctx.clip()

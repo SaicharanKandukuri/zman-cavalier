@@ -45,6 +45,10 @@ final class Configuration: Codable {
     var alwaysOnTop: Bool = false
     /// Bar fall speed (full-scale drops per second). 0 = instant snap, higher = slower fall (heavier gravity hold).
     var gravity: Float = 1.5
+    /// Path to a user-selected background image, or empty. Overrides bgImageIndex.
+    var bgImagePath: String = ""
+    /// Path to a user-selected foreground image (clipped to the bar shape), or empty. Overrides fgImageIndex.
+    var fgImagePath: String = ""
 
     enum CodingKeys: String, CodingKey {
         case windowWidth, windowHeight, windowMaximized, areaMargin
@@ -59,6 +63,7 @@ final class Configuration: Codable {
         case showFPS
         case alwaysOnTop
         case gravity
+        case bgImagePath, fgImagePath
     }
 
     init() {}
@@ -105,6 +110,8 @@ final class Configuration: Codable {
         showFPS = (try? c.decode(Bool.self, forKey: .showFPS)) ?? true
         alwaysOnTop = (try? c.decode(Bool.self, forKey: .alwaysOnTop)) ?? false
         gravity = (try? c.decode(Float.self, forKey: .gravity)) ?? 1.5
+        bgImagePath = (try? c.decode(String.self, forKey: .bgImagePath)) ?? ""
+        fgImagePath = (try? c.decode(String.self, forKey: .fgImagePath)) ?? ""
     }
 
     func encode(to encoder: Encoder) throws {
@@ -148,6 +155,8 @@ final class Configuration: Codable {
         try c.encode(showFPS, forKey: .showFPS)
         try c.encode(alwaysOnTop, forKey: .alwaysOnTop)
         try c.encode(gravity, forKey: .gravity)
+        try c.encode(bgImagePath, forKey: .bgImagePath)
+        try c.encode(fgImagePath, forKey: .fgImagePath)
     }
 
     var currentProfile: ColorProfile {

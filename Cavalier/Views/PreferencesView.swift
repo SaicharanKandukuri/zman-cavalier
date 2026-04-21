@@ -14,6 +14,70 @@ struct PreferencesView: View {
                 .tabItem { Label("Layout", systemImage: "square.grid.2x2") }
             ColorsTab(config: config)
                 .tabItem { Label("Colors", systemImage: "eyedropper") }
+            ImagesTab(config: config)
+                .tabItem { Label("Images", systemImage: "photo") }
+        }
+    }
+}
+
+private struct ImagesTab: View {
+    @Bindable var config: Configuration
+
+    var body: some View {
+        Form {
+            Section("Background image") {
+                ImageRow(
+                    path: config.bgImagePath,
+                    onPick: { newPath in config.bgImagePath = newPath; config.save() })
+                LabeledSlider(title: "Scale", value: $config.bgImageScale, range: 0.1...1.0, format: "%.2f")
+                LabeledSlider(title: "Alpha", value: $config.bgImageAlpha, range: 0...1, format: "%.2f")
+            }
+            Section("Foreground image (clipped to bars)") {
+                ImageRow(
+                    path: config.fgImagePath,
+                    onPick: { newPath in config.fgImagePath = newPath; config.save() })
+                LabeledSlider(title: "Scale", value: $config.fgImageScale, range: 0.1...1.0, format: "%.2f")
+                LabeledSlider(title: "Alpha", value: $config.fgImageAlpha, range: 0...1, format: "%.2f")
+            }
+        }
+        .padding()
+        .onChange(of: config.bgImageScale) { _, _ in config.save() }
+        .onChange(of: config.bgImageAlpha) { _, _ in config.save() }
+        .onChange(of: config.fgImageScale) { _, _ in config.save() }
+        .onChange(of: config.fgImageAlpha) { _, _ in config.save() }
+    }
+}
+
+private struct ImageRow: View {
+    let path: String
+    let onPick: (String) -> Void
+
+    var body: some View {
+        HStack {
+            Text(displayName)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .foregroundStyle(path.isEmpty ? .secondary : .primary)
+            Spacer()
+            Button("Choose…") { choose() }
+            if !path.isEmpty {
+                Button("Clear") { onPick("") }
+            }
+        }
+    }
+
+    private var displayName: String {
+        path.isEmpty ? "No image" : (path as NSString).lastPathComponent
+    }
+
+    private func choose() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowsMultipleSelection = false
+        panel.allowedContentTypes = [.jpeg, .png, .webP, .heic, .image]
+        if panel.runModal() == .OK, let url = panel.url {
+            onPick(url.path)
         }
     }
 }

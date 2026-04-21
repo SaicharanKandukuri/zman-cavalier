@@ -4,7 +4,8 @@ import CoreGraphics
 enum ParticlesBox {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush,
+                     capture: CGMutablePath? = nil) {
         guard !sample.isEmpty else { return }
         let n = sample.count
         let step = (direction.isVertical ? width : height) / CGFloat(n)
@@ -46,6 +47,6 @@ enum ParticlesBox {
             }
         }
         ctx.addPath(path)
-        brush.apply(ctx: ctx, filling: config.filling, thickness: thickness)
+        brush.apply(ctx: ctx, filling: config.filling, thickness: thickness, capture: capture)
     }
 }

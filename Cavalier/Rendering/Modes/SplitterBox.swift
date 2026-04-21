@@ -4,7 +4,8 @@ import CoreGraphics
 enum SplitterBox {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush,
+                     capture: CGMutablePath? = nil) {
         guard !sample.isEmpty else { return }
         let n = sample.count
         let step = (direction.isVertical ? width : height) / CGFloat(n)
@@ -52,7 +53,7 @@ enum SplitterBox {
         let thickness = CGFloat(config.linesThickness)
         if !config.filling {
             ctx.addPath(path)
-            brush.apply(ctx: ctx, filling: false, thickness: thickness)
+            brush.apply(ctx: ctx, filling: false, thickness: thickness, capture: capture)
         }
         switch direction {
         case .topBottom:
@@ -71,7 +72,7 @@ enum SplitterBox {
         path.closeSubpath()
         if config.filling {
             ctx.addPath(path)
-            brush.apply(ctx: ctx, filling: true, thickness: thickness)
+            brush.apply(ctx: ctx, filling: true, thickness: thickness, capture: capture)
         }
     }
 }

@@ -5,7 +5,8 @@ import Foundation
 enum BarsCircle {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush,
+                     capture: CGMutablePath? = nil) {
         guard !sample.isEmpty else { return }
         let fullRadius = min(width, height) / 2
         let innerRadius = fullRadius * CGFloat(config.innerRadius)
@@ -31,7 +32,7 @@ enum BarsCircle {
                 let path = CGMutablePath()
                 path.addRect(rect)
                 ctx.addPath(path)
-                brush.apply(ctx: ctx, filling: config.filling, thickness: thickness)
+                brush.apply(ctx: ctx, filling: config.filling, thickness: thickness, capture: capture)
             }
             ctx.restoreGState()
         }
