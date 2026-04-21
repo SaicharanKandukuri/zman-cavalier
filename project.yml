@@ -1,0 +1,48 @@
+name: Cavalier
+options:
+  bundleIdPrefix: com.zman
+  deploymentTarget:
+    macOS: "14.4"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+settings:
+  base:
+    MARKETING_VERSION: "2026.4.0"
+    CURRENT_PROJECT_VERSION: 1
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.4"
+    PRODUCT_BUNDLE_IDENTIFIER: com.zman.cavalier
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+    ENABLE_HARDENED_RUNTIME: NO
+    SWIFT_STRICT_CONCURRENCY: minimal
+targets:
+  Cavalier:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.4"
+    sources:
+      - path: Cavalier
+        excludes:
+          - "Info.plist"
+          - "Cavalier.entitlements"
+    info:
+      path: Cavalier/Info.plist
+      properties:
+        CFBundleName: Cavalier
+        CFBundleDisplayName: Cavalier
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHighResolutionCapable: true
+        LSApplicationCategoryType: public.app-category.music
+        NSAudioCaptureUsageDescription: Cavalier captures system audio to visualize it.
+    entitlements:
+      path: Cavalier/Cavalier.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_KEY_NSMainStoryboardFile: ""
+        COMBINE_HIDPI_IMAGES: YES
