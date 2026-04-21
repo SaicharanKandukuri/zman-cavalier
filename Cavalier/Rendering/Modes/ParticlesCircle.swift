@@ -5,7 +5,7 @@ import Foundation
 enum ParticlesCircle {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
         guard !sample.isEmpty else { return }
         let fullRadius = min(width, height) / 2
         let innerRadius = fullRadius * CGFloat(config.innerRadius)
@@ -37,7 +37,7 @@ enum ParticlesCircle {
                     path.addRect(rect)
                 }
                 ctx.addPath(path)
-                if config.filling { ctx.fillPath() } else { ctx.strokePath() }
+                brush.apply(ctx: ctx, filling: config.filling, thickness: thickness)
             }
             ctx.restoreGState()
         }

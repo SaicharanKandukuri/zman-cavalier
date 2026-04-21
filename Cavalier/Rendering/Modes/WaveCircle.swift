@@ -1,11 +1,11 @@
 import CoreGraphics
 import Foundation
 
-/// Circular closed cubic-bezier curve; filling clips to the curve and fills an inner ring.
+/// Circular closed cubic-bezier curve. Filled variant fills an annular ring clipped to the wave.
 enum WaveCircle {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
         guard !sample.isEmpty else { return }
         let fullRadius = min(width, height) / 2
         let innerRadius = fullRadius * CGFloat(config.innerRadius)
@@ -43,22 +43,26 @@ enum WaveCircle {
         path.closeSubpath()
 
         if config.filling {
+            // Fill an annular ring between inner & outer, clipped to the wave.
+            ctx.saveGState()
             ctx.addPath(path)
             ctx.clip()
-            // Draw a stroked ring that fills the area between innerRadius and fullRadius.
+
             let ringWidth = fullRadius - innerRadius
-            ctx.setLineWidth(ringWidth)
             let ringPath = CGMutablePath()
             ringPath.addArc(center: CGPoint(x: width / 2, y: height / 2),
                             radius: innerRadius + ringWidth / 2,
                             startAngle: 0, endAngle: twoPi,
                             clockwise: false)
             ctx.addPath(ringPath)
-            ctx.strokePath()
+            ctx.setLineWidth(ringWidth)
+            ctx.replacePathWithStrokedPath()
+            brush.apply(ctx: ctx, filling: true)
+
+            ctx.restoreGState()
         } else {
-            ctx.setLineWidth(CGFloat(config.linesThickness))
             ctx.addPath(path)
-            ctx.strokePath()
+            brush.apply(ctx: ctx, filling: false, thickness: CGFloat(config.linesThickness))
         }
         ctx.restoreGState()
     }

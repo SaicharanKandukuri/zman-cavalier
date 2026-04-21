@@ -4,7 +4,7 @@ import CoreGraphics
 enum WaveBox {
     static func draw(ctx: CGContext, sample: [Float], direction: DrawingDirection,
                      x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,
-                     rotation: CGFloat, config: Configuration) {
+                     rotation: CGFloat, config: Configuration, brush: FillBrush) {
         guard sample.count >= 2 else { return }
         let n = sample.count
         let axisLength = direction.isVertical ? width : height
@@ -81,11 +81,7 @@ enum WaveBox {
         }
 
         ctx.addPath(path)
-        if config.filling {
-            ctx.fillPath()
-        } else {
-            ctx.strokePath()
-        }
+        brush.apply(ctx: ctx, filling: config.filling, thickness: thickness)
     }
 
     private static func flipCoord(_ enabled: Bool, _ screenDim: CGFloat, _ v: CGFloat) -> CGFloat {

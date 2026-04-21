@@ -11,7 +11,10 @@ struct CavalierApp: App {
                 .environment(config)
                 .environment(engine)
                 .frame(minWidth: 320, minHeight: 200)
-                .background(WindowAccessor(alwaysOnTop: config.alwaysOnTop))
+                .background(WindowAccessor(
+                    alwaysOnTop: config.alwaysOnTop,
+                    borderless: config.borderless,
+                    showControls: config.showControls))
                 .onAppear { engine.start() }
         }
         .windowResizability(.contentMinSize)

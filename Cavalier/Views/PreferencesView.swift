@@ -97,6 +97,8 @@ private struct LayoutTab: View {
     var body: some View {
         Form {
             Toggle("Always on top", isOn: $config.alwaysOnTop)
+            Toggle("Borderless (no title bar)", isOn: $config.borderless)
+            Toggle("Show window controls", isOn: $config.showControls)
             Toggle("Show FPS overlay", isOn: $config.showFPS)
             Divider()
             Picker("Mirror", selection: $config.mirror) {
@@ -119,6 +121,8 @@ private struct LayoutTab: View {
         }
         .padding()
         .onChange(of: config.alwaysOnTop) { _, _ in config.save() }
+        .onChange(of: config.borderless) { _, _ in config.save() }
+        .onChange(of: config.showControls) { _, _ in config.save() }
         .onChange(of: config.showFPS) { _, _ in config.save() }
         .onChange(of: config.mirror) { _, _ in config.save() }
         .onChange(of: config.reverseMirror) { _, _ in config.save() }
@@ -133,19 +137,21 @@ private struct ColorsTab: View {
 
     var body: some View {
         Form {
-            let fg = config.currentProfile.fgColors.first ?? "#ff3584e4"
-            let bg = config.currentProfile.bgColors.first ?? "#ff242424"
-            ColorRow(title: "Foreground", hex: fg) { newHex in
-                updateActive { p in
-                    if p.fgColors.isEmpty { p.fgColors = [newHex] } else { p.fgColors[0] = newHex }
-                }
+            Section {
+                ColorListEditor(
+                    title: "Foreground",
+                    hexes: config.currentProfile.fgColors,
+                    default: "#ff3584e4",
+                    onChange: { list in updateActive { $0.fgColors = list } })
             }
-            ColorRow(title: "Background", hex: bg) { newHex in
-                updateActive { p in
-                    if p.bgColors.isEmpty { p.bgColors = [newHex] } else { p.bgColors[0] = newHex }
-                }
+            Section {
+                ColorListEditor(
+                    title: "Background",
+                    hexes: config.currentProfile.bgColors,
+                    default: "#ff242424",
+                    onChange: { list in updateActive { $0.bgColors = list } })
             }
-            Text("Config: \(Configuration.configURL.path)")
+            Text("Add a second color (+) to enable a gradient. Config: \(Configuration.configURL.path)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -159,6 +165,46 @@ private struct ColorsTab: View {
         mutate(&p)
         config.colorProfiles[idx] = p
         config.save()
+    }
+}
+
+private struct ColorListEditor: View {
+    let title: String
+    let hexes: [String]
+    let `default`: String
+    let onChange: ([String]) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(title).font(.headline)
+                Spacer()
+                Button {
+                    var next = hexes
+                    next.append(`default`)
+                    onChange(next)
+                } label: { Image(systemName: "plus.circle") }
+                .help("Add another color (creates a gradient)")
+            }
+            ForEach(hexes.indices, id: \.self) { i in
+                HStack {
+                    ColorRow(title: "", hex: hexes[i]) { newHex in
+                        var next = hexes
+                        if next.indices.contains(i) { next[i] = newHex }
+                        onChange(next)
+                    }
+                    if hexes.count > 1 {
+                        Button {
+                            var next = hexes
+                            if next.indices.contains(i) { next.remove(at: i) }
+                            onChange(next)
+                        } label: { Image(systemName: "minus.circle") }
+                        .buttonStyle(.borderless)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
 }
 
