@@ -42,7 +42,7 @@ final class Configuration: Codable {
 
     var hearts: Bool = false
     var showFPS: Bool = true
-    var alwaysOnTop: Bool = false
+    var alwaysOnTop: Bool = true
     /// Bar fall speed (full-scale drops per second). 0 = instant snap, higher = slower fall (heavier gravity hold).
     var gravity: Float = 1.5
     /// Path to a user-selected background image, or empty. Overrides bgImageIndex.
@@ -108,7 +108,7 @@ final class Configuration: Codable {
         fgImageScale = (try? c.decode(Float.self, forKey: .fgImageScale)) ?? 1
         fgImageAlpha = (try? c.decode(Float.self, forKey: .fgImageAlpha)) ?? 1
         showFPS = (try? c.decode(Bool.self, forKey: .showFPS)) ?? true
-        alwaysOnTop = (try? c.decode(Bool.self, forKey: .alwaysOnTop)) ?? false
+        alwaysOnTop = (try? c.decode(Bool.self, forKey: .alwaysOnTop)) ?? true
         gravity = (try? c.decode(Float.self, forKey: .gravity)) ?? 1.5
         bgImagePath = (try? c.decode(String.self, forKey: .bgImagePath)) ?? ""
         fgImagePath = (try? c.decode(String.self, forKey: .fgImagePath)) ?? ""
