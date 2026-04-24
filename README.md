@@ -45,7 +45,7 @@ The `.xcodeproj` is regenerated from `project.yml` and is git-ignored — only c
 - `Audio/SystemAudioTap.swift` — Core Audio process tap + aggregate device; captures stereo Float32 @ 48 kHz.
 - `Audio/AudioProcessor.swift` — Hann window → vDSP FFT → log-spaced bin grouping → autosens/sensitivity → temporal smoothing (noise reduction) → Monstercat spread.
 - `Audio/VisualizerEngine.swift` — framerate-paced pull from the ring buffer; publishes `latestBars` via `@Observable`.
-- `Audio/UDPBarSink.swift` — mirrors each bar frame to `udp://127.0.0.1:7777` for external consumers (see `keyboard-bridge/`). Fire-and-forget; harmless when nothing's listening.
+- `Audio/UDPBarSink.swift` — optional, opt-in. When *Broadcast spectrum to localhost* is enabled in **Preferences → Audio**, mirrors each bar frame to `udp://127.0.0.1:7777` for external consumers (see `keyboard-bridge/`). Off by default — enabling it makes audio-derived data readable by any local process on that port.
 - `Rendering/` — pure `CGContext` drawing, one file per mode.
 - `Views/VisualizerView.swift` — `NSView` driven by `CVDisplayLink` for vsync-locked redraws.
 

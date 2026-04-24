@@ -49,6 +49,10 @@ final class Configuration: Codable {
     var bgImagePath: String = ""
     /// Path to a user-selected foreground image (clipped to the bar shape), or empty. Overrides fgImageIndex.
     var fgImagePath: String = ""
+    /// Opt-in: broadcast each finalized bar frame on udp://127.0.0.1:7777 for external
+    /// consumers (e.g. the keyboard bridge). Off by default — enabling this makes audio-
+    /// derived data readable by any local process listening on that port.
+    var udpBridgeEnabled: Bool = false
 
     enum CodingKeys: String, CodingKey {
         case windowWidth, windowHeight, windowMaximized, areaMargin
@@ -64,6 +68,7 @@ final class Configuration: Codable {
         case alwaysOnTop
         case gravity
         case bgImagePath, fgImagePath
+        case udpBridgeEnabled
     }
 
     init() {}
@@ -112,6 +117,7 @@ final class Configuration: Codable {
         gravity = (try? c.decode(Float.self, forKey: .gravity)) ?? 1.5
         bgImagePath = (try? c.decode(String.self, forKey: .bgImagePath)) ?? ""
         fgImagePath = (try? c.decode(String.self, forKey: .fgImagePath)) ?? ""
+        udpBridgeEnabled = (try? c.decode(Bool.self, forKey: .udpBridgeEnabled)) ?? false
     }
 
     func encode(to encoder: Encoder) throws {
@@ -157,6 +163,7 @@ final class Configuration: Codable {
         try c.encode(gravity, forKey: .gravity)
         try c.encode(bgImagePath, forKey: .bgImagePath)
         try c.encode(fgImagePath, forKey: .fgImagePath)
+        try c.encode(udpBridgeEnabled, forKey: .udpBridgeEnabled)
     }
 
     var currentProfile: ColorProfile {

@@ -113,7 +113,7 @@ final class VisualizerEngine {
             combined = config.reverseOrder ? mono.reversed() : mono
         }
         let bars = finalizer.finalize(bars: combined, config: config)
-        udpSink?.send(bars: bars)
+        if config.udpBridgeEnabled { udpSink?.send(bars: bars) }
         let now = CACurrentMediaTime()
         if lastHzStamp == 0 { lastHzStamp = now }
         tickCounter += 1

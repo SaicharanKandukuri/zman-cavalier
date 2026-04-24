@@ -141,6 +141,14 @@ private struct AudioTab: View {
                           value: $config.noiseReduction, range: 0.15...0.95, format: "%.2f")
             LabeledSlider(title: "Gravity (fall speed)",
                           value: $config.gravity, range: 0...5, format: "%.2f")
+            Divider()
+            Section("External integrations") {
+                Toggle("Broadcast spectrum to localhost (UDP 7777)", isOn: $config.udpBridgeEnabled)
+                Text("Required for the keyboard-bridge tool. While enabled, any local process can read audio-derived spectrum data on 127.0.0.1:7777. Off by default.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding()
         .onChange(of: config.barPairs) { _, _ in config.save() }
@@ -152,6 +160,7 @@ private struct AudioTab: View {
         .onChange(of: config.monstercat) { _, _ in config.save() }
         .onChange(of: config.noiseReduction) { _, _ in config.save() }
         .onChange(of: config.gravity) { _, _ in config.save() }
+        .onChange(of: config.udpBridgeEnabled) { _, _ in config.save() }
     }
 }
 

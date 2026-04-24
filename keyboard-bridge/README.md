@@ -18,6 +18,17 @@ pink → purple → violet across the keys; etc.
   `Cavalier/Audio/UDPBarSink.swift`)
 - A Keychron V6 with stock Keychron firmware (VID `0x3434`)
 
+## Enable UDP in Cavalier
+
+The UDP feed is **off by default** for privacy. Turn it on once:
+
+**Cavalier → Preferences → Audio → External integrations →
+"Broadcast spectrum to localhost (UDP 7777)"**
+
+While that toggle is on, Cavalier emits bar frames on `127.0.0.1:7777`
+— readable by any local process. Turn it off when you're not using the
+bridge.
+
 ## Install
 
 ```sh
@@ -118,9 +129,10 @@ in the QMK tree and replace `LED_X` in `v6-layout.ts`. Also adjust
 - **"No Keychron V6 Raw HID interface found"** — matcher is strict
   (VID `0x3434`, `usagePage` `0xFF60`, `usage` `0x61`, product string
   starting with `"Keychron V6"`). Run `--list` and confirm.
-- **Bridge opens device but nothing happens** — audio not playing, or
-  Cavalier isn't running. Try `--demo` first to isolate the HID path;
-  if that works, the UDP feed is the problem.
+- **Bridge opens device but nothing happens** — audio not playing,
+  Cavalier isn't running, or the UDP toggle is off. Try `--demo` first
+  to isolate the HID path; if that works, the UDP feed is the problem.
+  Check **Preferences → Audio → Broadcast spectrum to localhost**.
 - **Colours look washed out** — lift `* 1.4` amplitude gain or raise
   the brightness floor.
 - **Rapid flicker / dropouts** — bump `FRAME_MS` to 60 (~16 fps) and/or
