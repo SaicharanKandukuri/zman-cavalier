@@ -4,3 +4,9 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 .DS_Store
+
+# Release artifacts (built locally, not committed)
+*.dmg
+
+# keyboard-bridge (node_modules restored with `bun install`; bun.lock is committed)
+keyboard-bridge/node_modules/

@@ -1,0 +1,16 @@
+{
+  "name": "cavalier-keyboard-bridge",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run bridge.ts",
+    "list": "bun run bridge.ts --list"
+  },
+  "dependencies": {
+    "node-hid": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "bun-types": "latest"
+  }
+}

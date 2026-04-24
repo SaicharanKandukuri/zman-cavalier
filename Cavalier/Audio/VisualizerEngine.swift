@@ -26,6 +26,7 @@ final class VisualizerEngine {
     private let finalizer = BarFinalizer()
     private let ringL = FloatRingBuffer(capacity: 48_000)
     private let ringR = FloatRingBuffer(capacity: 48_000)
+    private let udpSink = UDPBarSink()
     private var timer: DispatchSourceTimer?
     private var sampleRate: Double = 48_000
     private var channels: Int = 2
@@ -112,6 +113,7 @@ final class VisualizerEngine {
             combined = config.reverseOrder ? mono.reversed() : mono
         }
         let bars = finalizer.finalize(bars: combined, config: config)
+        udpSink?.send(bars: bars)
         let now = CACurrentMediaTime()
         if lastHzStamp == 0 { lastHzStamp = now }
         tickCounter += 1

@@ -45,10 +45,19 @@ The `.xcodeproj` is regenerated from `project.yml` and is git-ignored — only c
 - `Audio/SystemAudioTap.swift` — Core Audio process tap + aggregate device; captures stereo Float32 @ 48 kHz.
 - `Audio/AudioProcessor.swift` — Hann window → vDSP FFT → log-spaced bin grouping → autosens/sensitivity → temporal smoothing (noise reduction) → Monstercat spread.
 - `Audio/VisualizerEngine.swift` — framerate-paced pull from the ring buffer; publishes `latestBars` via `@Observable`.
+- `Audio/UDPBarSink.swift` — mirrors each bar frame to `udp://127.0.0.1:7777` for external consumers (see `keyboard-bridge/`). Fire-and-forget; harmless when nothing's listening.
 - `Rendering/` — pure `CGContext` drawing, one file per mode.
 - `Views/VisualizerView.swift` — `NSView` driven by `CVDisplayLink` for vsync-locked redraws.
 
 Config is persisted to `~/Library/Application Support/Cavalier/config.json`.
+
+## Keyboard bridge (optional)
+
+`keyboard-bridge/` is a small Bun tool that drives a Keychron V6's RGB LEDs in
+sync with Cavalier — per-key hue sampled from the app's active `fgColors`
+gradient, saturation driven by the spectrum. Zero firmware flashing (rides
+Keychron's stock vendor HID protocol). See
+[`keyboard-bridge/README.md`](keyboard-bridge/README.md).
 
 ## License
 
